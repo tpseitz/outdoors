@@ -1,6 +1,7 @@
 require "lib.maps"
 
 local tileset, room = {}, {}
+local objects = { items = { c8x8 = 1 } }
 local location = { cx = 8, cy = 8 }
 local character = { x = 8, y = 8 }
 
@@ -14,5 +15,5 @@ function love.update(dt)
 end
 
 function love.draw()
-  draw_map(location, tileset, room)
+  draw_map(location, tileset, room, objects)
 end
