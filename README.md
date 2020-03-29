@@ -9,7 +9,7 @@ Creators
 
 This game is created by Taikasienimetsän eläimet
 
-Hyrrämyyrä (Kyyrypyy)
-Mysia
-Sykerö (tpseitz)
+* Hyrrämyyrä (Kyyrypyy)
+* Mysia
+* Sykerö (tpseitz)
 
