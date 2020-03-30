@@ -1,3 +1,24 @@
+function load_animation(filename, layout, size)
+  size = size or 16
+  img = love.graphics.newImage("gfx/" .. filename)
+  width, height = img:getDimensions()
+  anim = { atlas=img }
+
+  if layout == "char" then
+    for y,nm in ipairs({"down","right","up","left","idle"}) do
+      if y * size >= height then break end
+      anim[nm] = {}
+      for x=1,4 do
+        if x * size >= width then break end
+        anim[nm][x] = love.graphics.newQuad(
+          x * size, y * size, size, size, width, height)
+      end
+    end
+  end
+
+  return anim
+end
+
 function load_tiles(filename)
   local set = loadfile("gfx/" .. filename .. ".lua")()
 
@@ -12,11 +33,8 @@ function load_tiles(filename)
   end
 
   set.obj = {}
-  for i, fn in ipairs(set.object_files) do
-    if not set.images[fn] then
-      set.images[fn] = love.graphics.newImage("gfx/" .. fn)
-    end
-    set.obj[i] = set.images[fn]
+  for i, ani in ipairs(set.object_files) do
+    set.obj[i] = load_animation(unpack(ani))
   end
 
   return set
@@ -61,25 +79,26 @@ function update_location(dsp, set, map, dt)
 end
 
 function draw_map(dsp, set, map, obj)
-  local sx, ox = math.modf(dsp.cx - dsp.tw / 2)
-  local sy, oy = math.modf(dsp.cy - dsp.th / 2)
+  local sx, ox = math.modf(dsp.cx - dsp.width / 2)
+  local sy, oy = math.modf(dsp.cy - dsp.height / 2)
+  local wd, ht = set.width * set.scale, set.height * set.scale
   ox, oy = ox * set.width, oy * set.height
 
-  for y = 0, dsp.th  do
+  for y = 0, dsp.th do
     for x = 0, dsp.tw do
       cs = 'c' .. (sx + x) .. 'x' .. (sy + y)
-      tx, ty = (x * set.width) - ox, (y * set.height) - oy
+      tx, ty = (x * wd) - ox, (y * ht) - oy
 
       local mt = (map.map[sy + y] or {})[sx + x]
       if mt and mt > 0 then
         local tl = set.tile[mt]
-        love.graphics.draw(tl, tx, ty)
+        love.graphics.draw(tl, tx, ty, 0, dsp.scale, dsp.scale)
       end
 
       ob = obj.items[cs]
       if ob then
-        local tl = set.obj[ob]
-        love.graphics.draw(tl, tx, ty)
+        local img, q = set.obj[ob].atlas, set.obj[ob]['up'][1]
+        love.graphics.draw(img, q, tx, ty, 0, scale, scale)
       end
     end
   end

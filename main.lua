@@ -1,5 +1,7 @@
 require "lib.maps"
 
+love.graphics.setDefaultFilter("nearest", "nearest", 1)
+
 local tileset, room = {}, {}
 local objects = { items = { c8x8 = 1 } }
 local location = { cx = 8, cy = 8 }
