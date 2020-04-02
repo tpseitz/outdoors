@@ -117,7 +117,7 @@ function update_location(dsp, set, map, delta)
   return dsp
 end
 
-function draw_map(dsp, set, map, obj)
+function draw_map(dsp, set, map)
   local sx, ox = math.modf(dsp.cx - dsp.tw / 2)
   local sy, oy = math.modf(dsp.cy - dsp.th / 2)
   local wd, ht = set.width * set.scale, set.height * set.scale
@@ -134,9 +134,9 @@ function draw_map(dsp, set, map, obj)
         end
       end
 
-      if obj then
+      if map.items then
         cs = (sx + x) .. ',' .. (sy + y)
-        ob = obj.items[cs]
+        ob = map.items[cs]
         if ob then
           local img, q = set.obj[ob].atlas, set.obj[ob].frame
           love.graphics.draw(img, q, tx, ty, 0, set.scale, set.scale)

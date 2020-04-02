@@ -1,4 +1,4 @@
-return {
+local object = {
   map = {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
     { 1, 2, 1, 1, 3, 3, 3, 1, 4, 1, 4, 1, 2, 2, 2, 1, 1, 1, 1, 1 },
@@ -20,5 +20,16 @@ return {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-  }
+  },
+  items = {}
 }
+
+object.items['6,9'] = "dbush"
+object.items['7,9'] = "dbush"
+object.items['8,9'] = "dbush"
+object.items['9,5'] = "mosh"
+object.items['8,8'] = "hero"
+object.items['6,11'] = "duck"
+object.items['8,11'] = "calf"
+
+return object
