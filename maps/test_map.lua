@@ -24,12 +24,11 @@ local object = {
   items = {}
 }
 
-object.items['6,9'] = "dbush"
-object.items['7,9'] = "dbush"
-object.items['8,9'] = "dbush"
-object.items['9,5'] = "mosh"
-object.items['8,8'] = "hero"
-object.items['6,11'] = "duck"
-object.items['8,11'] = "calf"
+object.items['6,9']  = { nm = "dbush" }
+object.items['7,9']  = { nm = "dbush" }
+object.items['8,9']  = { nm = "dbush" }
+object.items['9,5']  = { nm = "mosh" }
+object.items['6,11'] = { nm = "duck" }
+object.items['8,11'] = { nm = "calf" }
 
 return object

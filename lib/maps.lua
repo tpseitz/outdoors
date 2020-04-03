@@ -9,7 +9,7 @@ function load_animation(filename, layout, size, speed)
   local obj = { atlas=img, spd=(speed or 1) }
 
   if layout == "char" then
-    for y,nm in ipairs({"down","right","up","left","idle"}) do
+    for y,nm in ipairs({"down","right","up","left"}) do
       if y * size > height then break end
       anim[nm] = {}
       for x=0,15 do
@@ -18,13 +18,13 @@ function load_animation(filename, layout, size, speed)
           x * size, (y - 1) * size, size, size, width, height)
       end
     end
-    obj.nm = "down"
+    obj.default = "down"
   elseif layout == "anim" then
-    obj.nm = "default"
-    anim[obj.nm] = {}
+    obj.default = "default"
+    anim[obj.default] = {}
     for x=0,15 do
       if x * size > width then break end
-      anim[obj.nm][x] = love.graphics.newQuad(
+      anim[obj.default][x] = love.graphics.newQuad(
         x * size, 0, size, size, width, height)
     end
   else
@@ -34,19 +34,9 @@ function load_animation(filename, layout, size, speed)
 
   obj.anim = anim
   obj.fc = width / size - 1
-  obj.frame = obj.anim[obj.nm][1]
-
-  table.insert(animations, obj)
+  obj.frame = obj.anim[obj.default][1]
 
   return obj
-end
-
-function update_animations(delta)
-  frame = frame + delta * 10
-
-  for i,obj in ipairs(animations) do
-    obj.frame = obj.anim[obj.nm][math.floor((frame * obj.spd) % obj.fc + 1)]
-  end
 end
 
 function load_tiles(filename)
@@ -65,9 +55,26 @@ function load_tiles(filename)
   set.obj = {}
   for nm, ani in pairs(set.object_files) do
     set.obj[nm] = load_animation(unpack(ani))
+    animations[nm] = set.obj[nm]
   end
 
   return set
+end
+
+function update_animations(delta)
+  frame = frame + delta * 10
+end
+
+function get_ani(name, ani)
+  local obj = animations[name]
+  if not obj then
+    print("No animation object " .. name)
+    return nil
+  end
+
+  ani = ani or obj.default
+
+  return obj.atlas, obj.anim[ani][math.floor((frame * obj.spd) % obj.fc + 1)]
 end
 
 function load_map(filename)
@@ -78,15 +85,6 @@ function load_map(filename)
   for p in ipairs(map.map)    do map.height = map.height + 1 end
 
   return map
-end
-
-function update_hero(set, delta)
-  if set.obj["hero"] then
-    if love.keyboard.isDown("a") then set.obj["hero"].nm = "left"  end
-    if love.keyboard.isDown("d") then set.obj["hero"].nm = "right" end
-    if love.keyboard.isDown("w") then set.obj["hero"].nm = "up"    end
-    if love.keyboard.isDown("s") then set.obj["hero"].nm = "down"  end
-  end
 end
 
 function update_location(dsp, set, map, delta)
@@ -125,8 +123,9 @@ function draw_map(dsp, set, map)
 
   for y = 0, dsp.th do
     for x = 0, dsp.tw do
-      if map then
-        tx, ty = (x * wd) - ox, (y * ht) - oy
+      tx, ty = (x * wd) - ox, (y * ht) - oy
+
+      if map.map then
         local mt = (map.map[sy + y] or {})[sx + x]
         if mt and mt > 0 then
           local tl = set.tile[mt]
@@ -138,7 +137,7 @@ function draw_map(dsp, set, map)
         cs = (sx + x) .. ',' .. (sy + y)
         ob = map.items[cs]
         if ob then
-          local img, q = set.obj[ob].atlas, set.obj[ob].frame
+          local img, q = get_ani(ob.nm, ob.dir)
           love.graphics.draw(img, q, tx, ty, 0, set.scale, set.scale)
         end
       end
