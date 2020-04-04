@@ -16,7 +16,7 @@ local menu = nil
 function love.load()
   room = load_map("test_map")
   chars = room.objects
-  tileset = load_tiles("test_set")
+  tileset = load_tiles("tileset")
 end
 
 function love.keypressed(key)
