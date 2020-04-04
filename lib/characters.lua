@@ -1,6 +1,17 @@
+local move_time = 0.1
+local turn_time = 0.1
+
 function move_char(chr, map, frame, x, y)
-  chr.afr = frame + 0.1
+  local mt = (map.map[y] or {})[x]
+  if not mt then return chr end
+  local ps = map.pass[mt]
+  if not ps then return chr end
+  local mo = map.items[x .. ',' .. y]
+  if mo then return chr end
+
+  chr.afr = frame + move_time
   chr.x, chr.y = x, y
+  chr.follow = 1
   return chr
 end
 
@@ -13,7 +24,7 @@ function update_hero(hero, map, frame)
     if hero.dir == "left" then
       hero = move_char(hero, map, frame, hero.x - 1, hero.y)
     else
-      hero.afr = frame + 0.2
+      hero.afr = frame + turn_time
       hero.dir = "left"
     end
   end
@@ -21,7 +32,7 @@ function update_hero(hero, map, frame)
     if hero.dir == "right" then
       hero = move_char(hero, map, frame, hero.x + 1, hero.y)
     else
-      hero.afr = frame + 0.2
+      hero.afr = frame + turn_time
       hero.dir = "right"
     end
   end
@@ -29,7 +40,7 @@ function update_hero(hero, map, frame)
     if hero.dir == "up" then
       hero = move_char(hero, map, frame, hero.x, hero.y - 1)
     else
-      hero.afr = frame + 0.2
+      hero.afr = frame + turn_time
       hero.dir = "up"
     end
   end
@@ -37,7 +48,7 @@ function update_hero(hero, map, frame)
     if hero.dir == "down" then
       hero = move_char(hero, map, frame, hero.x, hero.y + 1)
     else
-      hero.afr = frame + 0.2
+      hero.afr = frame + turn_time
       hero.dir = "down"
     end
   end
@@ -47,8 +58,8 @@ end
 
 function update_characters(cls, hero)
   map = { items = {}, }
-  for i,ch in ipairs(cls) do
-    map.items[ch.x .. ',' .. ch.y] = { nm = ch.name, dir = ch.dir }
+  for cc,ch in pairs(cls) do
+    map.items[cc] = { nm = ch.nm, dir = ch.dir }
   end
 
   map.items[hero.x .. ',' .. hero.y] = { nm = "hero", dir = hero.dir }

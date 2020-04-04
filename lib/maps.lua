@@ -1,19 +1,20 @@
 local animations = {}
 local frame = 0
 
-function load_animation(filename, layout, size, speed)
+function load_animation(filename, layout, speed)
   local size = size or 16
   local img = love.graphics.newImage("gfx/" .. filename)
   local width, height = img:getDimensions()
   local anim = {}
   local obj = { atlas=img, spd=(speed or 1) }
 
+  obj.fc = math.floor(width / size) - 1
+
   if layout == "char" then
     for y,nm in ipairs({"down","right","up","left"}) do
       if y * size > height then break end
       anim[nm] = {}
-      for x=0,15 do
-        if x * size > width then break end
+      for x=0,obj.fc do
         anim[nm][x] = love.graphics.newQuad(
           x * size, (y - 1) * size, size, size, width, height)
       end
@@ -22,8 +23,7 @@ function load_animation(filename, layout, size, speed)
   elseif layout == "anim" then
     obj.default = "default"
     anim[obj.default] = {}
-    for x=0,15 do
-      if x * size > width then break end
+    for x=0,obj.fc do
       anim[obj.default][x] = love.graphics.newQuad(
         x * size, 0, size, size, width, height)
     end
@@ -33,7 +33,6 @@ function load_animation(filename, layout, size, speed)
   end
 
   obj.anim = anim
-  obj.fc = width / size - 1
   obj.frame = obj.anim[obj.default][1]
 
   return obj
@@ -62,7 +61,7 @@ function load_tiles(filename)
 end
 
 function update_animations(delta)
-  frame = frame + delta * 10
+  frame = frame + delta * 7
 end
 
 function get_ani(name, ani)
@@ -87,24 +86,35 @@ function load_map(filename)
   return map
 end
 
-function update_location(dsp, set, map, delta)
-  dsp.width  = love.graphics.getWidth()
-  dsp.height = love.graphics.getHeight()
+function update_location(dsp, set, map, hero, delta)
+  dsp.width  = dsp.width  or love.graphics.getWidth()
+  dsp.height = dsp.height or love.graphics.getHeight()
 
-  dsp.tw = math.ceil(dsp.width  / set.width  / set.scale)
-  dsp.th = math.ceil(dsp.height / set.height / set.scale)
+  dsp.tw = math.ceil(dsp.width  / set.size)
+  dsp.th = math.ceil(dsp.height / set.size)
 
   if love.keyboard.isDown("left") then
+    hero.follow = nil
     dsp.cx = dsp.cx - delta * dsp.tw
   end
   if love.keyboard.isDown("right") then
+    hero.follow = nil
     dsp.cx = dsp.cx + delta * dsp.tw
   end
   if love.keyboard.isDown("up") then
+    hero.follow = nil
     dsp.cy = dsp.cy - delta * dsp.th
   end
   if love.keyboard.isDown("down") then
+    hero.follow = nil
     dsp.cy = dsp.cy + delta * dsp.th
+  end
+  if love.keyboard.isDown("space") then
+    hero.follow = 1
+  end
+
+  if hero.follow then
+    dsp.cx, dsp.cy = hero.x + 1, hero.y + 1
   end
 
   if dsp.cx < 1 then dsp.cx = 1 end
@@ -118,18 +128,17 @@ end
 function draw_map(dsp, set, map)
   local sx, ox = math.modf(dsp.cx - dsp.tw / 2)
   local sy, oy = math.modf(dsp.cy - dsp.th / 2)
-  local wd, ht = set.width * set.scale, set.height * set.scale
-  ox, oy = ox * set.width * set.scale, oy * set.height * set.scale
+  ox, oy = ox * set.size, oy * set.size
 
   for y = 0, dsp.th do
     for x = 0, dsp.tw do
-      tx, ty = (x * wd) - ox, (y * ht) - oy
+      tx, ty = (x * set.size) - ox, (y * set.size) - oy
 
       if map.map then
         local mt = (map.map[sy + y] or {})[sx + x]
         if mt and mt > 0 then
           local tl = set.tile[mt]
-          love.graphics.draw(tl, tx, ty, 0, set.scale, set.scale)
+          love.graphics.draw(tl, tx, ty, 0)
         end
       end
 
@@ -138,7 +147,7 @@ function draw_map(dsp, set, map)
         ob = map.items[cs]
         if ob then
           local img, q = get_ani(ob.nm, ob.dir)
-          love.graphics.draw(img, q, tx, ty, 0, set.scale, set.scale)
+          love.graphics.draw(img, q, tx, ty, 0)
         end
       end
     end
