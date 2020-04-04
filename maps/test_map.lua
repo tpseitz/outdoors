@@ -28,14 +28,21 @@ local map = {
 
 map.pass[1] = 1
 
-map.items['6,9'] = { nm = "dbush" }
-map.items['7,9'] = { nm = "dbush" }
-map.items['8,9'] = { nm = "dbush" }
-map.items['9,5'] = { nm = "mosh" }
+map.items['7,9']  = { nm = "dbush" }
+map.items['8,9']  = { nm = "dbusf" }
+map.items['9,9']  = { nm = "dbush" }
+map.items['10,9'] = { nm = "dbush" }
+map.items['11,9'] = { nm = "dbush" }
+map.items['9,5']  = { nm = "mosh" }
 
 map.objects['6,11'] = { nm = "duck" }
 map.objects['8,11'] = { nm = "calf" }
+map.objects['9,11'] = { nm = "moo" }
 map.objects['7,6']  = { nm = "skel" }
 map.objects['9,6']  = { nm = "zombi" }
+map.objects['5,17'] = { nm = "blob" }
+map.objects['5,9']  = { nm = "smith1" }
+map.objects['14,3'] = { nm = "smith2" }
+map.objects['16,9'] = { nm = "elder1" }
 
 return map
