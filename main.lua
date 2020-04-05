@@ -14,6 +14,7 @@ local scale = 4
 local menu = nil
 
 function love.load()
+  load_menus()
   room = load_map("test_map")
   chars = room.objects
   tileset = load_tiles("tileset")

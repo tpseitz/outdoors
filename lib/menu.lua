@@ -1,7 +1,14 @@
-local main_menu = { keys = {}, buttons = {} }
-main_menu.keys['q'] = function() return love.event.quit(0) end
-main_menu.keys['f10'] = function() return love.event.quit(0) end
+local main_menu = {}
 local stack = {}
+
+function prepare_menu(name)
+  local menu = loadfile("lib/menu_" .. name .. ".lua")()
+  return menu
+end
+
+function load_menus()
+  main_menu = prepare_menu("main")
+end
 
 function key_pressed(key, menu)
   if key == "escape" then
